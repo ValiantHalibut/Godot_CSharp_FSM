@@ -1,15 +1,15 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace FSMTest
 {
     class Character
     {
-        private Stack _stateStack;
+        private Stack<IState> _stateStack;
         
         public Character()
         {
-            _stateStack = new Stack();
+            _stateStack = new Stack<IState>();
         }
         public void Initialize(IState state) 
         {
@@ -17,11 +17,11 @@ namespace FSMTest
         }
         public virtual void HandleInput() 
         {
-            checkState((_stateStack.Peek() as IState)?.HandleInput());
+            checkState(_stateStack.Peek()?.HandleInput());
         }
         public virtual void Update(float delta)
         {
-            checkState((_stateStack.Peek() as IState)?.Update(delta));
+            checkState(_stateStack.Peek()?.Update(delta));
         }
         private void checkState(IState state)
         {
@@ -38,15 +38,15 @@ namespace FSMTest
                 if(_stateStack.Count <= 1) return;
 
                 // First pop off the top of the stack and run its exit method...
-                (_stateStack.Pop() as IState)?.OnExit();
+                _stateStack.Pop()?.OnExit();
                 // ... then peek at the current state and run its entrance method
-                (_stateStack.Peek() as IState)?.OnEnter();
+                _stateStack.Peek()?.OnEnter();
                 return;
             }
 
             // If the returned state is different than the current state and not null,
             // we consider that a new state and add it to the top of the stack
-            (_stateStack.Peek() as IState)?.OnExit();
+            _stateStack.Peek()?.OnExit();
             _stateStack.Push(state);
             state.OnEnter();
         }
